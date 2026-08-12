@@ -1,0 +1,18 @@
+import { getImage } from "@/lib/gallery-store";
+
+// Serves admin-uploaded carousel screenshots. IDs are random per upload,
+// so the bytes never change for a given URL — cache hard.
+export async function GET(
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const img = await getImage(id);
+  if (!img) return new Response("Not found", { status: 404 });
+  return new Response(new Uint8Array(img.data), {
+    headers: {
+      "Content-Type": img.mime,
+      "Cache-Control": "public, max-age=31536000, immutable",
+    },
+  });
+}

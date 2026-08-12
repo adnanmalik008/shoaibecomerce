@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+/* Deliberately light-only design — trust-first SaaS look. No dark scheme flip. */
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-bricolage), var(--font-inter), ui-sans-serif, sans-serif;
+  --color-whatsapp: #25d366;
+  --color-whatsapp-dark: #1da851;
+}
+
+/* Full-bleed carousels use w-screen (100vw), which is wider than the
+   viewport by the scrollbar width — clip the few px of horizontal bleed. */
+html {
+  overflow-x: clip;
+}
+
+body {
+  background: #ffffff;
+  color: #334155;
+  font-family: var(--font-sans);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Chat bubble entrance for the hero phone mockup */
+@keyframes bubble-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.bubble {
+  opacity: 0;
+  animation: bubble-in 0.45s ease-out forwards;
+}
+
+/* Top urgency ticker */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
