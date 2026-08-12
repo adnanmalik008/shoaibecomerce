@@ -35,7 +35,7 @@ export default async function AdminLoginPage() {
           )}
         </div>
         <p className="mt-4 text-center text-xs text-slate-500">
-          Changes made here publish straight to shoaibecommerce.com
+          Changes made here publish straight to shoaibecomerce.com
         </p>
       </div>
     </div>

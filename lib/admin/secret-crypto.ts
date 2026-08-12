@@ -7,7 +7,7 @@ import { createCipheriv, createDecipheriv, randomBytes, scryptSync } from "crypt
 // only in the environment, keeping it out of any database dump.
 
 const VERSION = "v1";
-const FIXED_SALT = "shoaibecommerce-2fa-v1"; // domain separation for the KDF
+const FIXED_SALT = "shoaibecomerce-2fa-v1"; // domain separation for the KDF
 
 function key(): Buffer {
   const master = process.env.AUTH_SECRET || process.env.ADMIN_PASSWORD;

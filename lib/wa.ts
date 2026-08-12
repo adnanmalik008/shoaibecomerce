@@ -2,7 +2,7 @@
 // so these take the number as an argument instead of importing a constant.
 
 export const DEFAULT_WA_MESSAGE =
-  "Hi! I visited shoaibecommerce.com and I want to enroll in the 30-day Instagram eCommerce training.";
+  "Hi! I visited shoaibecomerce.com and I want to enroll in the 30-day Instagram eCommerce training.";
 
 /** number in international format without +, e.g. 923395456000 */
 export const waHref = (number: string, text = DEFAULT_WA_MESSAGE) =>

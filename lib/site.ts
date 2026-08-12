@@ -1,9 +1,18 @@
 // Single edit point for all site content. Update values here — pages read from this file.
 
+// Canonical origin for this deployment. Set NEXT_PUBLIC_SITE_URL in the server's
+// .env; the fallback is this site's domain (one 'm' — the ads landing page, not
+// the main shoaibecommerce.com site). Must be NEXT_PUBLIC_ because client
+// components import from this file. Trailing slash stripped so `${site.url}/x`
+// never doubles up.
+const SITE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL || "https://shoaibecomerce.com"
+).replace(/\/+$/, "");
+
 export const site = {
   name: "Shoaib Ecommerce",
   tagline: "First you learn, then you earn.",
-  url: "https://shoaibecommerce.com",
+  url: SITE_URL,
   description:
     "Learn to sell on Instagram in 30 days. Live classes with Shoaib Zareen, products already picked for you, delivery handled by our team.",
 };

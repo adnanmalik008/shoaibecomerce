@@ -1,6 +1,10 @@
 # Admin Dashboard Setup (Hostinger)
 
-The admin panel lives at **https://shoaibecommerce.com/admin**. It edits: WhatsApp main number, community link, support team and managers, top ticker, home hero copy, pricing and seats, bank details, guarantee line, videos, and social links. Changes go live immediately after saving.
+> This guide is for **shoaibecomerce.com** (one 'm') — the ads landing page. It runs
+> as its own Hostinger Node.js app with its own database. Every credential below
+> must be new; nothing is shared with the main shoaibecommerce.com site.
+
+The admin panel lives at **https://shoaibecomerce.com/admin**. It edits: WhatsApp main number, community link, support team and managers, top ticker, home hero copy, pricing and seats, bank details, guarantee line, videos, and social links. Changes go live immediately after saving.
 
 It needs two things on the server: a MySQL database and a `.env` file.
 
@@ -8,10 +12,14 @@ It needs two things on the server: a MySQL database and a `.env` file.
 
 In hPanel: **Databases → MySQL Databases**
 
-1. Database name: `site` (becomes `u289188798_site`)
-2. Username: `site` (becomes `u289188798_site`)
+1. Database name: pick one that is clearly this site's, e.g. `landing`
+   (hPanel prefixes it, so it becomes something like `u289188798_landing`)
+2. Username: same, e.g. `landing`
 3. Password: generate a strong one and note it down
 4. Click **Create**
+
+Create a **new** database — do not reuse the main site's. Copy the exact prefixed
+names hPanel shows you into `.env` below.
 
 No tables needed — the app creates its own table (`site_content`) on first save.
 
@@ -20,16 +28,23 @@ No tables needed — the app creates its own table (`site_content`) on first sav
 In hPanel: **Files → File Manager**, go to the folder the site deploys to (`public_html`), create a file named `.env` with:
 
 ```
+NEXT_PUBLIC_SITE_URL=https://shoaibecomerce.com
 ADMIN_PASSWORD=choose-a-strong-admin-password
 AUTH_SECRET=a-long-random-string-you-set-once-and-never-change
 DB_HOST=localhost
 DB_PORT=3306
-DB_NAME=u289188798_site
-DB_USER=u289188798_site
+DB_NAME=the-prefixed-db-name-from-step-1
+DB_USER=the-prefixed-db-user-from-step-1
 DB_PASSWORD=the-database-password-from-step-1
 ```
 
 `ADMIN_PASSWORD` is what you type at /admin/login. It is separate from the database password.
+
+**`ADMIN_PASSWORD` and `AUTH_SECRET` must be different from the main site's.** Sharing
+either one would let a leak on one site compromise the other.
+
+`NEXT_PUBLIC_SITE_URL` sets the canonical origin used in canonical tags, Open Graph
+tags, and schema.org. Unset, it falls back to `https://shoaibecomerce.com`.
 
 `AUTH_SECRET` signs login sessions and encrypts the 2FA secret. Set it to a long
 random string (40+ characters, letters and digits) **once** and never change it —
@@ -41,7 +56,7 @@ Trigger a redeploy (push to GitHub or redeploy from hPanel) so the app restarts 
 
 ## 4. Verify
 
-1. Open https://shoaibecommerce.com/admin → log in with `ADMIN_PASSWORD`
+1. Open https://shoaibecomerce.com/admin → log in with `ADMIN_PASSWORD`
 2. The badge at the top must say **Database connected** (green). If it says **Local file mode** (amber), the DB env vars are wrong or missing — edits would not survive redeploys.
 3. Change something small (e.g. seats left), save, open the home page — the ticker and pricing should show it immediately.
 

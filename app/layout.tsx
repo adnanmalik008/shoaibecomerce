@@ -61,16 +61,13 @@ export const metadata: Metadata = {
     description: site.description,
     images: ["/og.jpg"],
   },
+  // Ads landing page — kept out of the index entirely so it never competes with
+  // the main site in search. Inherited by every route unless a page overrides it.
   robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-      "max-video-preview": -1,
-    },
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: { index: false, follow: false },
   },
 };
 
