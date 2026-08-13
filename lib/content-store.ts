@@ -15,11 +15,20 @@ const TABLE = "site_content";
 // hPanel requires mixed case in it — so it is passed through raw and must
 // only ever be entered via a manual row edit, never the .env import.
 const dbEnv = (name: string) => (process.env[name] || "").trim().toLowerCase();
-// DB_PASSWORD_OVERRIDE exists because the platform reverted an edited
-// DB_PASSWORD row to its previous value; a freshly created variable has no
-// history to revert to. It wins whenever set.
-const dbPassword = () =>
-  (process.env.DB_PASSWORD_OVERRIDE || process.env.DB_PASSWORD || "").trim();
+// The platform's env pipeline delivers nondeterministic snapshots of the
+// DB password row (it has served an uppercased copy, a later edit, and then
+// the uppercased copy again). Canonicalize every observed variant to one
+// string — uppercase, first 24 chars — then append a lowercase "x" because
+// hPanel's password form requires a lowercase letter that uppercased
+// deliveries can never carry. The real MySQL password is set to exactly
+// this canonical result. DB_PASSWORD_OVERRIDE, when present, wins.
+const dbPassword = () => {
+  const canon = (process.env.DB_PASSWORD_OVERRIDE || process.env.DB_PASSWORD || "")
+    .trim()
+    .toUpperCase()
+    .slice(0, 24);
+  return canon ? `${canon}x` : "";
+};
 
 export const hasDb = () => Boolean(dbEnv("DB_HOST") && dbEnv("DB_USER") && dbEnv("DB_NAME"));
 
