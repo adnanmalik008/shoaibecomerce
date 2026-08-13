@@ -40,6 +40,11 @@ export async function GET(req: Request) {
       NEXT_PUBLIC_SITE_URL: shape("NEXT_PUBLIC_SITE_URL"),
     },
     hasDb: hasDb(),
+    // Key names only (never values): reveals typos/case/whitespace in the
+    // names of the variables the runtime actually received.
+    matchingKeys: Object.keys(process.env)
+      .filter((k) => /db|admin|auth|site_url|password/i.test(k))
+      .map((k) => JSON.stringify(k)),
   };
 
   try {
