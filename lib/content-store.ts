@@ -11,24 +11,14 @@ const TABLE = "site_content";
 // The Hostinger env-variable UI has been observed uppercasing stored values
 // (import and bulk entry; manual single-row edits are faithful). Host, user,
 // and database name are structurally lowercase, so trimming + lowercasing
-// makes them immune to that mangling. The password CANNOT be normalized —
-// hPanel requires mixed case in it — so it is passed through raw and must
-// only ever be entered via a manual row edit, never the .env import.
+// makes them immune to that mangling. The password is passed through raw and
+// must only ever be entered via a manual row edit, never the .env import.
 const dbEnv = (name: string) => (process.env[name] || "").trim().toLowerCase();
-// The platform's env pipeline delivers nondeterministic snapshots of the
-// DB password row (it has served an uppercased copy, a later edit, and then
-// the uppercased copy again). Canonicalize every observed variant to one
-// string — uppercase, first 24 chars — then append a lowercase "x" because
-// hPanel's password form requires a lowercase letter that uppercased
-// deliveries can never carry. The real MySQL password is set to exactly
-// this canonical result. DB_PASSWORD_OVERRIDE, when present, wins.
-const dbPassword = () => {
-  const canon = (process.env.DB_PASSWORD_OVERRIDE || process.env.DB_PASSWORD || "")
-    .trim()
-    .toUpperCase()
-    .slice(0, 24);
-  return canon ? `${canon}x` : "";
-};
+// DB_PASSWORD_OVERRIDE, when present, wins: a freshly created variable has no
+// edit history for the platform to revert to, so it is the escape hatch if an
+// edited DB_PASSWORD row ever serves a stale snapshot again.
+const dbPassword = () =>
+  (process.env.DB_PASSWORD_OVERRIDE || process.env.DB_PASSWORD || "").trim();
 
 export const hasDb = () => Boolean(dbEnv("DB_HOST") && dbEnv("DB_USER") && dbEnv("DB_NAME"));
 
