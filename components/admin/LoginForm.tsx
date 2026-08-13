@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { loginAction, type FormState } from "@/app/admin/actions";
+import { useActionNav } from "@/components/admin/useActionNav";
 import { Icon } from "@/components/icons";
 
 const initial: FormState = { ok: false, message: "" };
@@ -9,6 +10,7 @@ const initial: FormState = { ok: false, message: "" };
 export function LoginForm() {
   const [state, action, pending] = useActionState(loginAction, initial);
   const [show, setShow] = useState(false);
+  useActionNav(state);
 
   return (
     <form action={action} className="space-y-4">
@@ -43,10 +45,10 @@ export function LoginForm() {
       )}
       <button
         type="submit"
-        disabled={pending}
+        disabled={pending || Boolean(state.next)}
         className="w-full rounded-lg bg-slate-900 px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-slate-700 disabled:opacity-60"
       >
-        {pending ? "Signing in..." : "Sign in"}
+        {pending ? "Signing in..." : state.next ? "Redirecting..." : "Sign in"}
       </button>
     </form>
   );

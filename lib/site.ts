@@ -5,9 +5,10 @@
 // the main shoaibecommerce.com site). Must be NEXT_PUBLIC_ because client
 // components import from this file. Trailing slash stripped so `${site.url}/x`
 // never doubles up.
-const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL || "https://shoaibecomerce.com"
-).replace(/\/+$/, "");
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://shoaibecomerce.com")
+  .trim()
+  .toLowerCase()
+  .replace(/\/+$/, "");
 
 export const site = {
   name: "Shoaib Ecomerce",

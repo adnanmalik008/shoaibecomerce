@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath, updateTag } from "next/cache";
-import { redirect } from "next/navigation";
 import {
   checkPassword,
   clearPending,
@@ -27,10 +26,14 @@ import { deleteImageByUrl } from "@/lib/gallery-store";
 import { CONTENT_TAG, getContent, type GalleryKey, type TeamMember } from "@/lib/content";
 import { SECTION_VISIBILITY_KEYS } from "@/lib/section-visibility";
 
-export type FormState = { ok: boolean; message: string };
+// `next`: where the client should navigate after this action. Auth actions
+// return it instead of calling redirect() — on this host, Next's server-side
+// handling of an action redirect() tries to fetch the target through the
+// public origin from inside the container, which fails ("failed to get
+// redirect response: fetch failed") and surfaces as a server error page.
+// The client forms navigate with window.location instead.
+export type FormState = { ok: boolean; message: string; next?: string };
 export type EnrollState = FormState & { recoveryCodes?: string[] };
-
-const IDLE: FormState = { ok: false, message: "" };
 
 // ---- auth: step 1, password ----
 
@@ -41,13 +44,11 @@ export async function loginAction(_prev: FormState, formData: FormData): Promise
   }
   if (await isEnrolled()) {
     await createPending({ stage: "verify" });
-    redirect("/admin/2fa");
-  } else {
-    // no authenticator set up yet — start one-time enrollment
-    await createPending({ stage: "setup", secret: generateSecret() });
-    redirect("/admin/2fa/setup");
+    return { ok: true, message: "", next: "/admin/2fa" };
   }
-  return IDLE; // unreachable after redirect
+  // no authenticator set up yet — start one-time enrollment
+  await createPending({ stage: "setup", secret: generateSecret() });
+  return { ok: true, message: "", next: "/admin/2fa/setup" };
 }
 
 // ---- auth: step 2, authenticator code ----
@@ -67,8 +68,14 @@ export async function verifyTotpAction(_prev: FormState, formData: FormData): Pr
   const locked = await lockoutMessage();
   if (locked) return { ok: false, message: locked };
 
-  const enrollment = await getEnrollment();
-  if (!enrollment) redirect("/admin/login");
+  let enrollment;
+  try {
+    enrollment = await getEnrollment();
+  } catch (err) {
+    console.error("2FA verify: reading enrollment failed:", err);
+    return { ok: false, message: "Could not reach the database. Try again in a moment." };
+  }
+  if (!enrollment) return { ok: false, message: "", next: "/admin/login" };
 
   const counter = verifyToken(enrollment.secret, String(formData.get("code") || ""));
   // reject invalid codes and replays of an already-used time step
@@ -80,8 +87,7 @@ export async function verifyTotpAction(_prev: FormState, formData: FormData): Pr
   await clearFailures();
   await clearPending();
   await createSession();
-  redirect("/admin");
-  return IDLE;
+  return { ok: true, message: "", next: "/admin" };
 }
 
 export async function verifyRecoveryAction(_prev: FormState, formData: FormData): Promise<FormState> {
@@ -92,11 +98,18 @@ export async function verifyRecoveryAction(_prev: FormState, formData: FormData)
   const locked = await lockoutMessage();
   if (locked) return { ok: false, message: locked };
 
-  if (await consumeRecoveryCode(String(formData.get("code") || ""))) {
+  let valid: boolean;
+  try {
+    valid = await consumeRecoveryCode(String(formData.get("code") || ""));
+  } catch (err) {
+    console.error("2FA recovery: database failed:", err);
+    return { ok: false, message: "Could not reach the database. Try again in a moment." };
+  }
+  if (valid) {
     await clearFailures();
     await clearPending();
     await createSession();
-    redirect("/admin");
+    return { ok: true, message: "", next: "/admin" };
   }
   await recordFailure();
   return { ok: false, message: "That recovery code is not valid or has already been used." };
@@ -116,21 +129,28 @@ export async function enrollTotpAction(_prev: EnrollState, formData: FormData): 
     };
   }
   const recoveryCodes = generateRecoveryCodes(8);
-  await saveEnrollment(pending.secret, recoveryCodes);
+  try {
+    await saveEnrollment(pending.secret, recoveryCodes);
+  } catch (err) {
+    // saveEnrollment throws on DB failure; without this catch the visitor gets
+    // a bare server-error page instead of a retryable message.
+    console.error("2FA enrollment save failed:", err);
+    return { ok: false, message: "Could not save the setup. Database connection failed — fix it and try again." };
+  }
   return { ok: true, message: "", recoveryCodes };
 }
 
-export async function finishSetupAction(): Promise<void> {
+export async function finishSetupAction(_prev: FormState): Promise<FormState> {
   const pending = await readPending();
-  if (!pending || !(await isEnrolled())) redirect("/admin/login");
+  if (!pending || !(await isEnrolled())) return { ok: false, message: "", next: "/admin/login" };
   await clearPending();
   await createSession();
-  redirect("/admin");
+  return { ok: true, message: "", next: "/admin" };
 }
 
-export async function logoutAction(): Promise<void> {
+export async function logoutAction(): Promise<FormState> {
   await destroySession();
-  redirect("/admin/login");
+  return { ok: true, message: "", next: "/admin/login" };
 }
 
 // ---- content sections ----

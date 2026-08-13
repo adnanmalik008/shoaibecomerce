@@ -3,7 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { isAuthed } from "@/lib/admin/auth";
 import { dbStatus, storageBackend } from "@/lib/content-store";
-import { logoutAction } from "@/app/admin/actions";
+import { LogoutButton } from "@/components/admin/LogoutButton";
 import { Icon } from "@/components/icons";
 
 export const metadata: Metadata = {
@@ -50,14 +50,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <Icon name="external" className="h-3.5 w-3.5" />
               View site
             </Link>
-            <form action={logoutAction}>
-              <button
-                type="submit"
-                className="rounded-lg px-3.5 py-2 text-sm font-semibold text-slate-500 hover:bg-slate-100 hover:text-slate-900"
-              >
-                Log out
-              </button>
-            </form>
+            <LogoutButton />
           </div>
         </div>
       </div>

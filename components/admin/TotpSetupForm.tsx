@@ -2,15 +2,27 @@
 
 import Image from "next/image";
 import { useActionState, useState } from "react";
-import { enrollTotpAction, finishSetupAction, type EnrollState } from "@/app/admin/actions";
+import {
+  enrollTotpAction,
+  finishSetupAction,
+  type EnrollState,
+  type FormState,
+} from "@/app/admin/actions";
+import { useActionNav } from "@/components/admin/useActionNav";
 import { Icon } from "@/components/icons";
 
 const initial: EnrollState = { ok: false, message: "" };
+const finishInitial: FormState = { ok: false, message: "" };
 
 export function TotpSetupForm({ qrDataUrl, secret }: { qrDataUrl: string; secret: string }) {
   const [state, action, pending] = useActionState(enrollTotpAction, initial);
+  const [finishState, finishFormAction, finishPending] = useActionState(
+    finishSetupAction,
+    finishInitial
+  );
   const [saved, setSaved] = useState(false);
   const [copied, setCopied] = useState(false);
+  useActionNav(finishState);
 
   // Step 2: authenticator confirmed — show recovery codes once, then finish.
   if (state.ok && state.recoveryCodes) {
@@ -55,13 +67,13 @@ export function TotpSetupForm({ qrDataUrl, secret }: { qrDataUrl: string; secret
           />
           I have saved these recovery codes somewhere safe.
         </label>
-        <form action={finishSetupAction}>
+        <form action={finishFormAction}>
           <button
             type="submit"
-            disabled={!saved}
+            disabled={!saved || finishPending || Boolean(finishState.next)}
             className="w-full rounded-lg bg-slate-900 px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            Enter the dashboard
+            {finishPending || finishState.next ? "Opening..." : "Enter the dashboard"}
           </button>
         </form>
       </div>

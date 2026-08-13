@@ -10,7 +10,12 @@ const VERSION = "v1";
 const FIXED_SALT = "shoaibecomerce-2fa-v1"; // domain separation for the KDF
 
 function key(): Buffer {
-  const master = process.env.AUTH_SECRET || process.env.ADMIN_PASSWORD;
+  // Trim + lowercase mirrors lib/admin/auth.ts exactly — the Hostinger env UI
+  // can uppercase stored values, and the KDF input must be identical everywhere
+  // or previously encrypted 2FA secrets become undecryptable.
+  const master = (process.env.AUTH_SECRET || process.env.ADMIN_PASSWORD || "")
+    .trim()
+    .toLowerCase();
   if (!master) {
     throw new Error("Cannot encrypt 2FA secret: set AUTH_SECRET (or ADMIN_PASSWORD).");
   }

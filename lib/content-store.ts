@@ -8,8 +8,14 @@ import path from "path";
 
 const TABLE = "site_content";
 
-export const hasDb = () =>
-  Boolean(process.env.DB_HOST && process.env.DB_USER && process.env.DB_NAME);
+// The Hostinger env-variable UI has been observed uppercasing stored values
+// (import and bulk entry; manual edits are faithful). All DB credentials are
+// deliberately lowercase-only, so trimming + lowercasing here makes the app
+// immune to that mangling in either direction. The DB password itself is
+// lowercase-only by policy — see ADMIN-SETUP.md.
+const dbEnv = (name: string) => (process.env[name] || "").trim().toLowerCase();
+
+export const hasDb = () => Boolean(dbEnv("DB_HOST") && dbEnv("DB_USER") && dbEnv("DB_NAME"));
 
 // ---- MySQL backend ----
 
@@ -21,13 +27,14 @@ export async function getPool() {
   if (!pool) {
     const mysql = await import("mysql2/promise");
     pool = mysql.createPool({
-      host: process.env.DB_HOST,
-      port: Number(process.env.DB_PORT || 3306),
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
+      host: dbEnv("DB_HOST"),
+      port: Number(process.env.DB_PORT?.trim() || 3306),
+      user: dbEnv("DB_USER"),
+      password: dbEnv("DB_PASSWORD"),
+      database: dbEnv("DB_NAME"),
       waitForConnections: true,
       connectionLimit: 4,
+      connectTimeout: 8000,
       charset: "utf8mb4",
     });
   }

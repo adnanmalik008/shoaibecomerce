@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { verifyRecoveryAction, verifyTotpAction, type FormState } from "@/app/admin/actions";
+import { useActionNav } from "@/components/admin/useActionNav";
 
 const initial: FormState = { ok: false, message: "" };
 
@@ -12,6 +13,8 @@ export function TotpVerifyForm() {
   const [mode, setMode] = useState<"app" | "recovery">("app");
   const [codeState, codeAction, codePending] = useActionState(verifyTotpAction, initial);
   const [recState, recAction, recPending] = useActionState(verifyRecoveryAction, initial);
+  useActionNav(codeState);
+  useActionNav(recState);
 
   if (mode === "recovery") {
     return (
