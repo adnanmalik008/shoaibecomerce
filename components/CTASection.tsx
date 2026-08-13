@@ -8,7 +8,9 @@ export async function CTASection({
   title?: string;
   subtitle?: string;
 }) {
-  const { pricing } = await getContent();
+  const { pricing, sectionVisibility } = await getContent();
+  if (!sectionVisibility.finalCta) return null;
+
   return (
     <section className="bg-slate-900">
       <div className="mx-auto max-w-6xl px-4 py-16 text-center sm:px-6 sm:py-20">

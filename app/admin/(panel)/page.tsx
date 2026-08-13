@@ -8,6 +8,7 @@ import {
   LiveClassesForm,
   PaymentForm,
   PricingForm,
+  SectionVisibilityForm,
   SocialsForm,
   TeamForm,
   TickerForm,
@@ -19,6 +20,7 @@ const NAV = [
   {
     group: "Home page",
     items: [
+      { id: "section-visibility", label: "Visibility", icon: "eye" },
       { id: "hero", label: "Hero", icon: "type" },
       { id: "videos", label: "Videos", icon: "play" },
       { id: "interviews", label: "TV interviews", icon: "play" },
@@ -108,6 +110,7 @@ export default async function AdminPage() {
 
       {/* Sections, in nav order */}
       <div className="space-y-6">
+        <SectionVisibilityForm value={content.sectionVisibility} />
         <HeroForm value={content.hero} />
         <VideosForm value={content.videos} />
         <InterviewsForm value={content.interviews} />

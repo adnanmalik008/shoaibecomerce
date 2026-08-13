@@ -2,6 +2,10 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import type { Gallery, GalleryKey, SiteContent, TeamMember, Wallet } from "@/lib/content";
+import {
+  SECTION_VISIBILITY_GROUPS,
+  type SectionVisibility,
+} from "@/lib/section-visibility";
 import { Icon } from "@/components/icons";
 import { useConfirm } from "@/components/admin/ConfirmDialog";
 import {
@@ -12,6 +16,7 @@ import {
   saveLiveClasses,
   savePayment,
   savePricing,
+  saveSectionVisibility,
   saveSocials,
   saveTeam,
   saveTicker,
@@ -259,6 +264,100 @@ function PreviewShell({ label, children }: { label?: string; children: React.Rea
       </p>
       <div className="p-4">{children}</div>
     </div>
+  );
+}
+
+// ---- Website section visibility ----
+
+export function SectionVisibilityForm({ value }: { value: SectionVisibility }) {
+  const section = useSection(saveSectionVisibility);
+  const [visibility, setVisibility] = useState(value);
+
+  return (
+    <Card
+      id="section-visibility"
+      icon="eye"
+      title="Website section visibility"
+      description="Choose which sections visitors can see. Hidden sections keep their content and can be restored at any time."
+      section={section}
+    >
+      <form action={section.formAction} className="space-y-6">
+        {SECTION_VISIBILITY_GROUPS.map((group) => (
+          <fieldset key={group.label}>
+            <legend className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
+              {group.label}
+            </legend>
+            <div className="grid gap-2.5 sm:grid-cols-2">
+              {group.items.map((item) => {
+                const enabled = visibility[item.key];
+                return (
+                  <label key={item.key} className="cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name={item.key}
+                      checked={enabled}
+                      onChange={(event) => {
+                        setVisibility((current) => ({
+                          ...current,
+                          [item.key]: event.target.checked,
+                        }));
+                        section.markDirty();
+                      }}
+                      className="peer sr-only"
+                    />
+                    <span
+                      className={`flex min-h-16 items-center gap-3 rounded-xl border px-3.5 py-3 transition-colors peer-focus-visible:outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-slate-900 peer-focus-visible:ring-offset-2 ${
+                        enabled
+                          ? "border-emerald-200 bg-emerald-50/60"
+                          : "border-slate-200 bg-slate-50"
+                      }`}
+                    >
+                      <span
+                        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
+                          enabled
+                            ? "bg-emerald-100 text-emerald-700"
+                            : "bg-slate-200 text-slate-500"
+                        }`}
+                      >
+                        <Icon name={enabled ? "eye" : "eyeOff"} className="h-4 w-4" />
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-sm font-semibold text-slate-900">
+                          {item.label}
+                        </span>
+                        <span className="block text-xs text-slate-500">{item.location}</span>
+                      </span>
+                      <span className="flex shrink-0 flex-col items-end gap-1.5">
+                        <span
+                          className={`text-[11px] font-semibold ${
+                            enabled ? "text-emerald-700" : "text-slate-500"
+                          }`}
+                        >
+                          {enabled ? "Visible" : "Hidden"}
+                        </span>
+                        <span
+                          aria-hidden="true"
+                          className={`relative h-6 w-11 rounded-full transition-colors ${
+                            enabled ? "bg-emerald-600" : "bg-slate-300"
+                          }`}
+                        >
+                          <span
+                            className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${
+                              enabled ? "translate-x-6" : "translate-x-1"
+                            }`}
+                          />
+                        </span>
+                      </span>
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          </fieldset>
+        ))}
+        <SaveRow section={section} />
+      </form>
+    </Card>
   );
 }
 

@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 };
 
 export default async function EnrollPage() {
-  const { pricing, guarantee, whatsapp, payment } = await getContent();
+  const { pricing, guarantee, whatsapp, payment, sectionVisibility } = await getContent();
 
   return (
     <>
@@ -101,7 +101,8 @@ export default async function EnrollPage() {
       </section>
 
       {/* Support team */}
-      <section id="support" className="scroll-mt-20 border-t border-slate-200 bg-white">
+      {sectionVisibility.supportTeam ? (
+        <section id="support" className="scroll-mt-20 border-t border-slate-200 bg-white">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="font-display text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
@@ -116,7 +117,8 @@ export default async function EnrollPage() {
             <SupportTeam />
           </div>
         </div>
-      </section>
+        </section>
+      ) : null}
     </>
   );
 }

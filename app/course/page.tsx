@@ -24,12 +24,12 @@ export const metadata: Metadata = {
 };
 
 export default async function CoursePage() {
-  const { pricing } = await getContent();
+  const { pricing, sectionVisibility } = await getContent();
 
   return (
     <>
-      <JsonLd data={courseSchema(pricing)} />
-      <JsonLd data={faqSchema} />
+      <JsonLd data={courseSchema(pricing, sectionVisibility.pricing)} />
+      {sectionVisibility.faq ? <JsonLd data={faqSchema} /> : null}
       {/* Header */}
       <section className="bg-slate-50">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
@@ -100,41 +100,45 @@ export default async function CoursePage() {
       </section>
 
       {/* What's included + pricing */}
-      <section className="bg-slate-50">
-        <div className="mx-auto grid max-w-6xl items-start gap-12 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-2">
-          <div>
-            <h2 className="font-display text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              Everything included in your fee
-            </h2>
-            <p className="mt-4 text-lg text-slate-600">
-              One payment, nothing hidden, no upsells later.
-            </p>
-            <ul className="mt-8 space-y-4">
-              {included.map((item) => (
-                <li key={item} className="flex items-start gap-3 text-slate-700">
-                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
-                    <Icon name="check" className="h-3.5 w-3.5" />
-                  </span>
-                  {item}
-                </li>
-              ))}
-            </ul>
+      {sectionVisibility.pricing ? (
+        <section className="bg-slate-50">
+          <div className="mx-auto grid max-w-6xl items-start gap-12 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-2">
+            <div>
+              <h2 className="font-display text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                Everything included in your fee
+              </h2>
+              <p className="mt-4 text-lg text-slate-600">
+                One payment, nothing hidden, no upsells later.
+              </p>
+              <ul className="mt-8 space-y-4">
+                {included.map((item) => (
+                  <li key={item} className="flex items-start gap-3 text-slate-700">
+                    <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+                      <Icon name="check" className="h-3.5 w-3.5" />
+                    </span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <PricingCard />
           </div>
-          <PricingCard />
-        </div>
-      </section>
+        </section>
+      ) : null}
 
       {/* Full FAQ */}
-      <section className="bg-white" id="faq">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
-          <h2 className="text-center font-display text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-            Frequently asked questions
-          </h2>
-          <div className="mt-10">
-            <FAQAccordion />
+      {sectionVisibility.faq ? (
+        <section className="bg-white" id="faq">
+          <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+            <h2 className="text-center font-display text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+              Frequently asked questions
+            </h2>
+            <div className="mt-10">
+              <FAQAccordion />
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : null}
 
       <CTASection />
     </>

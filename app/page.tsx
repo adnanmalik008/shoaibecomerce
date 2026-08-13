@@ -13,8 +13,17 @@ import { heroVideoSchema } from "@/lib/schema";
 import { enrollSteps, fatwa, instructor, stats } from "@/lib/site";
 
 export default async function HomePage() {
-  const { hero, pricing, guarantee, videos, payment, galleries, liveClasses, interviews } =
-    await getContent();
+  const {
+    hero,
+    pricing,
+    guarantee,
+    videos,
+    payment,
+    galleries,
+    liveClasses,
+    interviews,
+    sectionVisibility,
+  } = await getContent();
   const hlStart = hero.highlight ? hero.heading.indexOf(hero.highlight) : -1;
 
   // show live class clips in batch order; videos with a number come first
@@ -32,9 +41,12 @@ export default async function HomePage() {
 
   return (
     <>
-      <JsonLd data={heroVideoSchema(videos.hero.youtubeId)} />
+      {sectionVisibility.homeHero ? (
+        <JsonLd data={heroVideoSchema(videos.hero.youtubeId)} />
+      ) : null}
       {/* Hero */}
-      <section className="overflow-hidden bg-gradient-to-b from-slate-50 to-white">
+      {sectionVisibility.homeHero ? (
+        <section className="overflow-hidden bg-gradient-to-b from-slate-50 to-white">
         <div className="mx-auto max-w-4xl px-4 pb-10 pt-14 text-center sm:px-6 sm:pt-20">
           {hero.badge.trim() && (
             <p className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-700 shadow-sm">
@@ -119,10 +131,12 @@ export default async function HomePage() {
             </div>
           </div>
         </div>
-      </section>
+        </section>
+      ) : null}
 
       {/* Halal fatwa: the single most important trust signal */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-emerald-600 to-emerald-700">
+      {sectionVisibility.fatwa ? (
+        <section className="relative overflow-hidden bg-gradient-to-b from-emerald-600 to-emerald-700">
         <div
           className="pointer-events-none absolute inset-0 -z-0 opacity-20 [background-image:radial-gradient(circle_at_top,white,transparent_60%)]"
           aria-hidden="true"
@@ -174,10 +188,11 @@ export default async function HomePage() {
             <Icon name="external" className="h-4 w-4" />
           </a>
         </div>
-      </section>
+        </section>
+      ) : null}
 
       {/* TV interviews (hidden until the admin adds some) */}
-      {interviews.map((interview, i) => (
+      {sectionVisibility.interviews ? interviews.map((interview, i) => (
         <section
           key={interview.id}
           className={i % 2 === 0 ? "bg-white" : "bg-slate-50"}
@@ -196,10 +211,11 @@ export default async function HomePage() {
             </div>
           </div>
         </section>
-      ))}
+      )) : null}
 
       {/* Main CTA: how to join + payment details */}
-      <section className="bg-slate-900">
+      {sectionVisibility.enrollment ? (
+        <section className="bg-slate-900">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
           <div className="mx-auto max-w-2xl text-center">
             <p className="inline-flex items-center rounded-full bg-amber-400/10 px-4 py-1.5 text-xs font-semibold text-amber-300 ring-1 ring-amber-400/30">
@@ -246,10 +262,12 @@ export default async function HomePage() {
           </div>
           <p className="mt-5 text-center text-sm text-slate-400">{guarantee}</p>
         </div>
-      </section>
+        </section>
+      ) : null}
 
       {/* Watch the training in action */}
-      <section className="bg-white">
+      {sectionVisibility.trainingVideo ? (
+        <section className="bg-white">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="font-display text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
@@ -264,10 +282,12 @@ export default async function HomePage() {
             <YouTubeEmbed id={videos.story.youtubeId} title={videos.story.title} />
           </div>
         </div>
-      </section>
+        </section>
+      ) : null}
 
       {/* Instructor teaser */}
-      <section className="bg-slate-50">
+      {sectionVisibility.instructor ? (
+        <section className="bg-slate-50">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
           <div className="grid items-center gap-10 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm sm:p-12 lg:grid-cols-[1fr_1.5fr]">
             <div className="relative mx-auto h-40 w-40 overflow-hidden rounded-full shadow-sm lg:h-48 lg:w-48">
@@ -300,10 +320,12 @@ export default async function HomePage() {
             </div>
           </div>
         </div>
-      </section>
+        </section>
+      ) : null}
 
       {/* Student payouts */}
-      <section className="bg-white">
+      {sectionVisibility.payouts ? (
+        <section className="bg-white">
         <div className="mx-auto max-w-6xl px-4 pt-16 sm:px-6 sm:pt-20">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="font-display text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
@@ -320,10 +342,12 @@ export default async function HomePage() {
             altLabel="Payout sent to a student screenshot"
           />
         </div>
-      </section>
+        </section>
+      ) : null}
 
       {/* Student earnings preview */}
-      <section className="border-t border-slate-100 bg-white">
+      {sectionVisibility.earnings ? (
+        <section className="border-t border-slate-100 bg-white">
         <div className="mx-auto max-w-6xl px-4 pt-16 sm:px-6 sm:pt-20">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="font-display text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
@@ -340,10 +364,12 @@ export default async function HomePage() {
             altLabel="Student earnings screenshot"
           />
         </div>
-      </section>
+        </section>
+      ) : null}
 
       {/* Training testimonials preview */}
-      <section className="bg-slate-50">
+      {sectionVisibility.testimonials ? (
+        <section className="bg-slate-50">
         <div className="mx-auto max-w-6xl px-4 pt-16 sm:px-6 sm:pt-20">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="font-display text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
@@ -371,10 +397,11 @@ export default async function HomePage() {
             </Link>
           </div>
         </div>
-      </section>
+        </section>
+      ) : null}
 
       {/* Live class snapshots (hidden until the admin adds videos) */}
-      {liveClasses.videos.length > 0 && (
+      {sectionVisibility.liveClasses && liveClasses.videos.length > 0 ? (
         <section className="border-t border-slate-100 bg-white">
           <div className="mx-auto max-w-6xl px-4 pt-16 sm:px-6 sm:pt-20">
             <div className="mx-auto max-w-2xl text-center">
@@ -395,10 +422,11 @@ export default async function HomePage() {
             />
           </div>
         </section>
-      )}
+      ) : null}
 
       {/* Pricing */}
-      <section className="bg-white" id="pricing">
+      {sectionVisibility.pricing ? (
+        <section className="bg-white" id="pricing">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="font-display text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
@@ -412,10 +440,12 @@ export default async function HomePage() {
             <PricingCard />
           </div>
         </div>
-      </section>
+        </section>
+      ) : null}
 
       {/* FAQ preview */}
-      <section className="bg-slate-50">
+      {sectionVisibility.faq ? (
+        <section className="bg-slate-50">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="font-display text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
@@ -435,7 +465,8 @@ export default async function HomePage() {
             </Link>
           </div>
         </div>
-      </section>
+        </section>
+      ) : null}
 
       <CTASection />
     </>

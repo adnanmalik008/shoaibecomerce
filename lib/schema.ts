@@ -23,7 +23,9 @@ export const websiteSchema = {
   url: site.url,
 };
 
-export const courseSchema = (pricing: SiteContent["pricing"]) => ({
+// `showPricing` follows the admin's pricing visibility toggle: when the price is
+// hidden from the page, the offer is left out of the markup too.
+export const courseSchema = (pricing: SiteContent["pricing"], showPricing = true) => ({
   "@context": "https://schema.org",
   "@type": "Course",
   name: "Launch Your Instagram eCommerce Business in 30 Days",
@@ -40,14 +42,18 @@ export const courseSchema = (pricing: SiteContent["pricing"]) => ({
     jobTitle: instructor.role,
   },
   inLanguage: "en",
-  offers: {
-    "@type": "Offer",
-    price: pricing.current,
-    priceCurrency: "PKR",
-    availability: "https://schema.org/LimitedAvailability",
-    url: `${site.url}/enroll`,
-    category: "Paid",
-  },
+  ...(showPricing
+    ? {
+        offers: {
+          "@type": "Offer",
+          price: pricing.current,
+          priceCurrency: "PKR",
+          availability: "https://schema.org/LimitedAvailability",
+          url: `${site.url}/enroll`,
+          category: "Paid",
+        },
+      }
+    : {}),
   hasCourseInstance: {
     "@type": "CourseInstance",
     courseMode: "Online",

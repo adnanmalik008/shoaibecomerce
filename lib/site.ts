@@ -10,12 +10,17 @@ const SITE_URL = (
 ).replace(/\/+$/, "");
 
 export const site = {
-  name: "Shoaib Ecommerce",
+  name: "Shoaib Ecomerce",
   tagline: "First you learn, then you earn.",
   url: SITE_URL,
   description:
     "Learn to sell on Instagram in 30 days. Live classes with Shoaib Zareen, products already picked for you, delivery handled by our team.",
 };
+
+// Wordmark used by the navbar and footer: first word solid, the rest greyed.
+// Derived from site.name so renaming the site only takes one edit.
+const [nameFirst, ...nameRest] = site.name.split(" ");
+export const wordmark = { first: nameFirst, rest: nameRest.join(" ") };
 
 export const WHATSAPP_NUMBER = "923395456000";
 export const WHATSAPP_COMMUNITY = "https://chat.whatsapp.com/L44bRCamilx6YvNSnpF336";

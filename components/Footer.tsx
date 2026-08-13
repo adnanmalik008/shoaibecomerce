@@ -1,11 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getContent } from "@/lib/content";
-import { legalNav, nav, site } from "@/lib/site";
+import { legalNav, nav, site, wordmark } from "@/lib/site";
 import { Icon } from "./icons";
 
 export async function Footer() {
-  const { socials, whatsapp } = await getContent();
+  const { socials, whatsapp, sectionVisibility } = await getContent();
   return (
     <footer className="border-t border-slate-200 bg-slate-50">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
@@ -20,8 +20,8 @@ export async function Footer() {
                 className="h-9 w-9 rounded-lg"
               />
               <span>
-                {site.name.split(" ")[0]}
-                <span className="text-slate-400"> Ecommerce</span>
+                {wordmark.first}
+                <span className="text-slate-400"> {wordmark.rest}</span>
               </span>
             </p>
             <p className="mt-2 text-sm text-slate-500">{site.tagline}</p>
@@ -35,7 +35,10 @@ export async function Footer() {
             {[
               ...nav,
               { label: "Enroll", href: "/enroll" },
-              { label: "Support", href: "/enroll#support" },
+              // #support only exists while the support team section is visible
+              ...(sectionVisibility.supportTeam
+                ? [{ label: "Support", href: "/enroll#support" }]
+                : []),
             ].map((item) => (
               <Link
                 key={item.href}

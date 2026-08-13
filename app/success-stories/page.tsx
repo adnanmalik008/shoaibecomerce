@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 };
 
 export default async function SuccessStoriesPage() {
-  const { galleries } = await getContent();
+  const { galleries, sectionVisibility } = await getContent();
 
   return (
     <>
@@ -54,7 +54,8 @@ export default async function SuccessStoriesPage() {
       </section>
 
       {/* Student payouts */}
-      <section className="bg-white">
+      {sectionVisibility.payouts ? (
+        <section className="bg-white">
         <div className="mx-auto max-w-6xl px-4 pt-16 sm:px-6 sm:pt-20">
           <h2 className="text-center font-display text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
             {galleries.payouts.heading}
@@ -71,10 +72,12 @@ export default async function SuccessStoriesPage() {
             altLabel="Payout sent to a student screenshot"
           />
         </div>
-      </section>
+        </section>
+      ) : null}
 
       {/* Student earnings */}
-      <section className="border-t border-slate-100 bg-white">
+      {sectionVisibility.earnings ? (
+        <section className="border-t border-slate-100 bg-white">
         <div className="mx-auto max-w-6xl px-4 pt-16 sm:px-6 sm:pt-20">
           <h2 className="text-center font-display text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
             {galleries.earnings.heading}
@@ -91,10 +94,12 @@ export default async function SuccessStoriesPage() {
             altLabel="Student earnings screenshot"
           />
         </div>
-      </section>
+        </section>
+      ) : null}
 
       {/* Training testimonials */}
-      <section className="bg-slate-50">
+      {sectionVisibility.testimonials ? (
+        <section className="bg-slate-50">
         <div className="mx-auto max-w-6xl px-4 pt-16 sm:px-6 sm:pt-20">
           <h2 className="text-center font-display text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
             {galleries.training.heading}
@@ -111,7 +116,8 @@ export default async function SuccessStoriesPage() {
             altLabel="Student training feedback screenshot"
           />
         </div>
-      </section>
+        </section>
+      ) : null}
 
       <CTASection
         title="You could be the next story"

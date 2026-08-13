@@ -17,7 +17,7 @@ export async function LegalPage({
   intro: string;
   sections: LegalSection[];
 }) {
-  const { whatsapp } = await getContent();
+  const { whatsapp, sectionVisibility } = await getContent();
   const phoneDisplay = `+${whatsapp.number}`;
 
   return (
@@ -70,14 +70,20 @@ export async function LegalPage({
                 className="font-semibold text-slate-900 underline underline-offset-4"
               >
                 {phoneDisplay}
-              </a>{" "}
-              or reach any of the team members listed on the{" "}
-              <Link
-                href="/enroll#support"
-                className="font-semibold text-slate-900 underline underline-offset-4"
-              >
-                support section
-              </Link>
+              </a>
+              {/* the support section anchor only exists while that section is visible */}
+              {sectionVisibility.supportTeam ? (
+                <>
+                  {" "}
+                  or reach any of the team members listed on the{" "}
+                  <Link
+                    href="/enroll#support"
+                    className="font-semibold text-slate-900 underline underline-offset-4"
+                  >
+                    support section
+                  </Link>
+                </>
+              ) : null}
               . We reply every day.
             </p>
           </div>

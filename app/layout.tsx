@@ -89,13 +89,21 @@ export default async function RootLayout({
         <JsonLd data={websiteSchema} />
       </head>
       <body className="min-h-full flex flex-col pb-20 md:pb-0">
-        <Ticker messages={content.ticker} />
+        {content.sectionVisibility.announcementTicker ? (
+          <Ticker messages={content.ticker} />
+        ) : null}
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />
-        <StickyEnrollBar pricing={content.pricing} />
+        {/* Both quote the price, so they follow the pricing toggle — hiding the
+            pricing sections while a sticky bar still shows the fee would defeat it. */}
+        {content.sectionVisibility.pricing ? (
+          <StickyEnrollBar pricing={content.pricing} />
+        ) : null}
         <WhatsAppFab href={waHref(content.whatsapp.number)} />
-        <UrgencyPopup pricing={content.pricing} />
+        {content.sectionVisibility.pricing ? (
+          <UrgencyPopup pricing={content.pricing} />
+        ) : null}
       </body>
     </html>
   );

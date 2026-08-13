@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { nav, site } from "@/lib/site";
+import { nav, wordmark } from "@/lib/site";
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
@@ -26,8 +26,8 @@ export function Navbar() {
             className="h-9 w-9 rounded-lg"
           />
           <span>
-            {site.name.split(" ")[0]}
-            <span className="text-slate-400"> Ecommerce</span>
+            {wordmark.first}
+            <span className="text-slate-400"> {wordmark.rest}</span>
           </span>
         </Link>
 

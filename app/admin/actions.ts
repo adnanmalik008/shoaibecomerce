@@ -25,6 +25,7 @@ import { generateRecoveryCodes, generateSecret, verifyToken } from "@/lib/admin/
 import { saveSection } from "@/lib/content-store";
 import { deleteImageByUrl } from "@/lib/gallery-store";
 import { CONTENT_TAG, getContent, type GalleryKey, type TeamMember } from "@/lib/content";
+import { SECTION_VISIBILITY_KEYS } from "@/lib/section-visibility";
 
 export type FormState = { ok: boolean; message: string };
 export type EnrollState = FormState & { recoveryCodes?: string[] };
@@ -148,6 +149,16 @@ async function save(key: string, value: unknown): Promise<FormState> {
 }
 
 const digits = (v: FormDataEntryValue | null) => String(v || "").replace(/\D/g, "");
+
+export async function saveSectionVisibility(
+  _prev: FormState,
+  formData: FormData
+): Promise<FormState> {
+  const visibility = Object.fromEntries(
+    SECTION_VISIBILITY_KEYS.map((key) => [key, formData.get(key) === "on"])
+  );
+  return save("sectionVisibility", visibility);
+}
 
 export async function saveWhatsapp(_prev: FormState, formData: FormData): Promise<FormState> {
   const number = digits(formData.get("number"));

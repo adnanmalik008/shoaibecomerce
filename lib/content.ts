@@ -1,6 +1,7 @@
 import "server-only";
 import { unstable_cache } from "next/cache";
 import { getOverrides } from "./content-store";
+import { normalizeSectionVisibility, type SectionVisibility } from "./section-visibility";
 import {
   guarantee,
   interviews,
@@ -33,6 +34,7 @@ export type Payment = {
 };
 
 export type SiteContent = {
+  sectionVisibility: SectionVisibility;
   whatsapp: { number: string; community: string };
   hero: { badge: string; heading: string; highlight: string; subheading: string };
   ticker: string[];
@@ -179,6 +181,7 @@ async function buildContent(): Promise<SiteContent> {
   );
 
   return {
+    sectionVisibility: normalizeSectionVisibility(o.sectionVisibility),
     whatsapp: mergeSection({ number: WHATSAPP_NUMBER, community: WHATSAPP_COMMUNITY }, o.whatsapp),
     hero: mergeSection(heroDefaults, o.hero),
     // ticker defaults follow edited pricing unless the admin overrode the ticker itself
