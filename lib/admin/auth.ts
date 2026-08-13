@@ -14,11 +14,10 @@ const SESSION_DAYS = 7;
 const PENDING_COOKIE = "admin_2fa_pending";
 const PENDING_MINUTES = 10;
 
-// Trim + lowercase to survive the Hostinger env UI's observed value mangling
-// (uppercasing on import/bulk entry). Both secrets are issued lowercase-safe,
-// and every consumer normalizes the same way, so the derived values are stable
-// whether or not the platform mangles the stored copy.
-const envSecret = (name: string) => (process.env[name] || "").trim().toLowerCase();
+// Trimmed only — a trailing newline or stray space in an env row would
+// otherwise change every derived value. Case is preserved: the secrets are
+// used verbatim as KDF/HMAC input, so all consumers must normalize identically.
+const envSecret = (name: string) => (process.env[name] || "").trim();
 
 function secret(): string {
   return envSecret("AUTH_SECRET") || `s:${envSecret("ADMIN_PASSWORD")}`;
@@ -38,13 +37,10 @@ export function adminConfigured(): boolean {
   return Boolean(envSecret("ADMIN_PASSWORD"));
 }
 
-// Case-insensitive on purpose: the env value may arrive uppercased (see
-// envSecret). The password is a 24-char random string, so ignoring case still
-// leaves an enormous search space.
 export function checkPassword(password: string): boolean {
   const expected = envSecret("ADMIN_PASSWORD");
   if (!expected) return false;
-  return safeEqual(password.trim().toLowerCase(), expected);
+  return safeEqual(password.trim(), expected);
 }
 
 export async function createSession(): Promise<void> {

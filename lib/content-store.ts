@@ -8,17 +8,11 @@ import path from "path";
 
 const TABLE = "site_content";
 
-// The Hostinger env-variable UI has been observed uppercasing stored values
-// (import and bulk entry; manual single-row edits are faithful). Host, user,
-// and database name are structurally lowercase, so trimming + lowercasing
-// makes them immune to that mangling. The password is passed through raw and
-// must only ever be entered via a manual row edit, never the .env import.
-const dbEnv = (name: string) => (process.env[name] || "").trim().toLowerCase();
-// DB_PASSWORD_OVERRIDE, when present, wins: a freshly created variable has no
-// edit history for the platform to revert to, so it is the escape hatch if an
-// edited DB_PASSWORD row ever serves a stale snapshot again.
-const dbPassword = () =>
-  (process.env.DB_PASSWORD_OVERRIDE || process.env.DB_PASSWORD || "").trim();
+// DB_HOST must be 127.0.0.1, not "localhost": Node resolves localhost to IPv6
+// ::1 first, and the MySQL user is granted for 127.0.0.1/localhost only, so
+// "localhost" fails with "Access denied for user ...@'::1'" even when the
+// password is correct.
+const dbEnv = (name: string) => (process.env[name] || "").trim();
 
 export const hasDb = () => Boolean(dbEnv("DB_HOST") && dbEnv("DB_USER") && dbEnv("DB_NAME"));
 
@@ -33,9 +27,9 @@ export async function getPool() {
     const mysql = await import("mysql2/promise");
     pool = mysql.createPool({
       host: dbEnv("DB_HOST"),
-      port: Number(process.env.DB_PORT?.trim() || 3306),
+      port: Number(dbEnv("DB_PORT") || 3306),
       user: dbEnv("DB_USER"),
-      password: dbPassword(),
+      password: dbEnv("DB_PASSWORD"),
       database: dbEnv("DB_NAME"),
       waitForConnections: true,
       connectionLimit: 4,
