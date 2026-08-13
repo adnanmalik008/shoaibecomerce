@@ -15,7 +15,11 @@ const TABLE = "site_content";
 // hPanel requires mixed case in it — so it is passed through raw and must
 // only ever be entered via a manual row edit, never the .env import.
 const dbEnv = (name: string) => (process.env[name] || "").trim().toLowerCase();
-const dbPassword = () => (process.env.DB_PASSWORD || "").trim();
+// DB_PASSWORD_OVERRIDE exists because the platform reverted an edited
+// DB_PASSWORD row to its previous value; a freshly created variable has no
+// history to revert to. It wins whenever set.
+const dbPassword = () =>
+  (process.env.DB_PASSWORD_OVERRIDE || process.env.DB_PASSWORD || "").trim();
 
 export const hasDb = () => Boolean(dbEnv("DB_HOST") && dbEnv("DB_USER") && dbEnv("DB_NAME"));
 

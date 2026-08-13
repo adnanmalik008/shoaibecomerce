@@ -34,6 +34,7 @@ export async function GET(req: Request) {
       DB_NAME: shape("DB_NAME"),
       DB_USER: shape("DB_USER"),
       DB_PASSWORD: shape("DB_PASSWORD"),
+      DB_PASSWORD_OVERRIDE: shape("DB_PASSWORD_OVERRIDE"),
       ADMIN_PASSWORD: shape("ADMIN_PASSWORD"),
       AUTH_SECRET: shape("AUTH_SECRET"),
       NEXT_PUBLIC_SITE_URL: shape("NEXT_PUBLIC_SITE_URL"),
