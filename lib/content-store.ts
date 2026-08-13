@@ -9,11 +9,13 @@ import path from "path";
 const TABLE = "site_content";
 
 // The Hostinger env-variable UI has been observed uppercasing stored values
-// (import and bulk entry; manual edits are faithful). All DB credentials are
-// deliberately lowercase-only, so trimming + lowercasing here makes the app
-// immune to that mangling in either direction. The DB password itself is
-// lowercase-only by policy — see ADMIN-SETUP.md.
+// (import and bulk entry; manual single-row edits are faithful). Host, user,
+// and database name are structurally lowercase, so trimming + lowercasing
+// makes them immune to that mangling. The password CANNOT be normalized —
+// hPanel requires mixed case in it — so it is passed through raw and must
+// only ever be entered via a manual row edit, never the .env import.
 const dbEnv = (name: string) => (process.env[name] || "").trim().toLowerCase();
+const dbPassword = () => (process.env.DB_PASSWORD || "").trim();
 
 export const hasDb = () => Boolean(dbEnv("DB_HOST") && dbEnv("DB_USER") && dbEnv("DB_NAME"));
 
@@ -30,7 +32,7 @@ export async function getPool() {
       host: dbEnv("DB_HOST"),
       port: Number(process.env.DB_PORT?.trim() || 3306),
       user: dbEnv("DB_USER"),
-      password: dbEnv("DB_PASSWORD"),
+      password: dbPassword(),
       database: dbEnv("DB_NAME"),
       waitForConnections: true,
       connectionLimit: 4,
