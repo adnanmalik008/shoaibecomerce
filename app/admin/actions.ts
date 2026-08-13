@@ -160,6 +160,16 @@ export async function saveSectionVisibility(
   return save("sectionVisibility", visibility);
 }
 
+export async function saveMetaPixel(_prev: FormState, formData: FormData): Promise<FormState> {
+  const id = String(formData.get("pixelId") || "").trim();
+  // Digits-only, hard requirement: the ID is interpolated into an inline
+  // script on every public page, so nothing but a numeric ID may be stored.
+  if (id && !/^\d{5,20}$/.test(id)) {
+    return { ok: false, message: "A Pixel ID is numbers only (usually 15-16 digits)." };
+  }
+  return save("metaPixelId", id);
+}
+
 export async function saveWhatsapp(_prev: FormState, formData: FormData): Promise<FormState> {
   const number = digits(formData.get("number"));
   const community = String(formData.get("community") || "").trim();

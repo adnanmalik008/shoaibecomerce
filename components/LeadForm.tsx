@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { trackLead } from "@/lib/tracking";
 import { waHref } from "@/lib/wa";
 import { Icon } from "./icons";
 
@@ -27,6 +28,8 @@ export function LeadForm({ whatsappNumber }: { whatsappNumber: string }) {
     if (form.city.trim()) lines.push(`City: ${form.city.trim()}`);
     if (form.question.trim()) lines.push(`Question: ${form.question.trim()}`);
 
+    // window.open bypasses the delegated WhatsApp click tracker, so track here
+    trackLead("lead-form");
     window.open(waHref(whatsappNumber, lines.join("\n")), "_blank", "noopener,noreferrer");
   };
 

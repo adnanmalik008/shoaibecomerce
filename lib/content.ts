@@ -35,6 +35,8 @@ export type Payment = {
 
 export type SiteContent = {
   sectionVisibility: SectionVisibility;
+  /** Meta (Facebook) Pixel ID; empty string disables all Meta tracking. */
+  metaPixelId: string;
   whatsapp: { number: string; community: string };
   hero: { badge: string; heading: string; highlight: string; subheading: string };
   ticker: string[];
@@ -182,6 +184,8 @@ async function buildContent(): Promise<SiteContent> {
 
   return {
     sectionVisibility: normalizeSectionVisibility(o.sectionVisibility),
+    // no default in lib/site.ts: tracking stays off until the admin sets an ID
+    metaPixelId: typeof o.metaPixelId === "string" ? o.metaPixelId.trim() : "",
     whatsapp: mergeSection({ number: WHATSAPP_NUMBER, community: WHATSAPP_COMMUNITY }, o.whatsapp),
     hero: mergeSection(heroDefaults, o.hero),
     // ticker defaults follow edited pricing unless the admin overrode the ticker itself

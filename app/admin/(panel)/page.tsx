@@ -6,6 +6,7 @@ import {
   HeroForm,
   InterviewsForm,
   LiveClassesForm,
+  MetaPixelForm,
   PaymentForm,
   PricingForm,
   SectionVisibilityForm,
@@ -51,6 +52,10 @@ const NAV = [
       { id: "team", label: "Support team", icon: "headset" },
       { id: "socials", label: "Social links", icon: "link" },
     ],
+  },
+  {
+    group: "Marketing",
+    items: [{ id: "meta-pixel", label: "Meta Pixel", icon: "megaphone" }],
   },
 ];
 
@@ -140,6 +145,7 @@ export default async function AdminPage() {
         <WhatsappForm value={content.whatsapp} />
         <TeamForm value={content.supportTeam} />
         <SocialsForm value={content.socials} />
+        <MetaPixelForm value={content.metaPixelId} />
       </div>
     </div>
   );

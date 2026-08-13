@@ -14,6 +14,7 @@ import {
   saveHero,
   saveInterviews,
   saveLiveClasses,
+  saveMetaPixel,
   savePayment,
   savePricing,
   saveSectionVisibility,
@@ -355,6 +356,44 @@ export function SectionVisibilityForm({ value }: { value: SectionVisibility }) {
             </div>
           </fieldset>
         ))}
+        <SaveRow section={section} />
+      </form>
+    </Card>
+  );
+}
+
+// ---- Meta Pixel ----
+
+export function MetaPixelForm({ value }: { value: string }) {
+  const section = useSection(saveMetaPixel);
+
+  return (
+    <Card
+      id="meta-pixel"
+      icon="megaphone"
+      title="Meta Pixel (Facebook ads)"
+      description="Tracks visits and WhatsApp leads for ad campaigns. Visitors are asked for consent before any tracking starts."
+      section={section}
+    >
+      <form action={section.formAction} onChange={section.markDirty} className="space-y-4">
+        <div>
+          <Label htmlFor="meta-pixel-id" hint="from Meta Events Manager, numbers only">
+            Pixel ID
+          </Label>
+          <input
+            id="meta-pixel-id"
+            name="pixelId"
+            type="text"
+            inputMode="numeric"
+            placeholder="e.g. 1234567890123456"
+            defaultValue={value}
+            className="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 font-mono text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/20 sm:max-w-sm"
+          />
+          <p className="mt-2 text-xs text-slate-500">
+            Found in Meta Events Manager under Data Sources. Leave empty to turn all Meta
+            tracking (and the consent banner) off.
+          </p>
+        </div>
         <SaveRow section={section} />
       </form>
     </Card>

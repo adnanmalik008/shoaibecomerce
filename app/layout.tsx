@@ -2,11 +2,14 @@ import type { Metadata } from "next";
 import { Bricolage_Grotesque, Inter } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
+import { ConsentBanner } from "@/components/ConsentBanner";
 import { Footer } from "@/components/Footer";
+import { MetaPixel } from "@/components/MetaPixel";
 import { JsonLd } from "@/components/JsonLd";
 import { StickyEnrollBar } from "@/components/StickyEnrollBar";
 import { Ticker } from "@/components/Ticker";
 import { UrgencyPopup } from "@/components/UrgencyPopup";
+import { WaClickTracker } from "@/components/WaClickTracker";
 import { WhatsAppFab } from "@/components/WhatsAppFab";
 import { getContent } from "@/lib/content";
 import { organizationSchema, websiteSchema } from "@/lib/schema";
@@ -103,6 +106,14 @@ export default async function RootLayout({
         <WhatsAppFab href={waHref(content.whatsapp.number)} />
         {content.sectionVisibility.pricing ? (
           <UrgencyPopup pricing={content.pricing} />
+        ) : null}
+        {/* Tracking is entirely admin-controlled: no pixel ID, no pixel, no banner */}
+        {content.metaPixelId ? (
+          <>
+            <MetaPixel pixelId={content.metaPixelId} />
+            <WaClickTracker />
+            <ConsentBanner />
+          </>
         ) : null}
       </body>
     </html>
