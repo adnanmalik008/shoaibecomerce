@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Bricolage_Grotesque, Inter } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
-import { ConsentBanner } from "@/components/ConsentBanner";
+import { TrackingNotice } from "@/components/TrackingNotice";
 import { Footer } from "@/components/Footer";
 import { MetaPixel } from "@/components/MetaPixel";
 import { JsonLd } from "@/components/JsonLd";
@@ -112,7 +112,7 @@ export default async function RootLayout({
           <>
             <MetaPixel pixelId={content.metaPixelId} />
             <WaClickTracker />
-            <ConsentBanner />
+            <TrackingNotice />
           </>
         ) : null}
       </body>

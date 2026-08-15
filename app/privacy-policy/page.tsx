@@ -43,8 +43,9 @@ const sections: LegalSection[] = [
     heading: "Cookies and advertising (Meta Pixel)",
     blocks: [
       "We advertise this course on Facebook and Instagram. To measure those ads, this site can use the Meta Pixel, a small piece of code from Meta Platforms that sets cookies and tells us — and Meta — which pages you visited and whether you contacted us on WhatsApp after seeing an ad. Meta may use this data in line with its own privacy policy, including to improve ad delivery.",
-      "The pixel only runs if you choose \"Accept\" on the cookie banner shown on your first visit. If you decline, no Meta cookies are set and nothing is shared with Meta. Your choice is remembered on your device; to change it later, clear this site's data in your browser and the banner will ask again.",
-      "You can also control how Meta uses data about you from its ad partners in your Facebook settings, under \"Your ad preferences\".",
+      "The pixel runs on every visit to this site, and a notice on your first visit tells you so. Dismissing that notice only hides it — it does not turn the pixel on or off.",
+      "If you would rather not be measured this way, you can block it: use your browser's tracking-protection or cookie settings to block third-party cookies from facebook.net, or use any ad blocker. You can also control how Meta uses data about you from its ad partners in your Facebook settings, under \"Your ad preferences\".",
+      "We do not run the pixel on our admin pages.",
     ],
   },
   {
@@ -63,7 +64,7 @@ const sections: LegalSection[] = [
         list: [
           "Our own support and admin team, so they can enroll you and help you.",
           "Service providers that host this website and store its data.",
-          "Meta, for ad measurement — only if you accept the cookie banner, as described above.",
+          "Meta, for ad measurement, as described above.",
           "Authorities, if the law requires us to.",
         ],
       },

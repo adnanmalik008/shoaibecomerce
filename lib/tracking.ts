@@ -1,19 +1,13 @@
 // Client-side Meta Pixel helpers. The pixel itself is loaded by
-// components/MetaPixel.tsx once the visitor has consented; everything here is
-// safe to call unconditionally — calls are dropped until fbq exists.
+// components/MetaPixel.tsx; everything here is safe to call unconditionally —
+// calls are dropped until fbq exists.
 //
-// Consent model (site targets ads worldwide, including the EU/UK):
-//   "granted"  — visitor accepted the banner; pixel loads and events fire
-//   "denied"   — visitor declined; nothing loads, choice is remembered
-//   null       — no choice yet; banner is shown, nothing loads
+// Tracking model: the pixel loads for every visitor as soon as the page does.
+// components/TrackingNotice.tsx tells the visitor this is happening and links
+// to the privacy policy; dismissing that notice only hides it, it does not
+// switch tracking on or off. The storage key below records that dismissal.
 
-export const CONSENT_STORAGE_KEY = "tracking-consent";
-
-// Fired on window when the visitor makes a choice so the pixel loader can
-// react without a page reload.
-export const CONSENT_EVENT = "tracking-consent-change";
-
-export type TrackingConsent = "granted" | "denied";
+export const NOTICE_STORAGE_KEY = "tracking-notice";
 
 declare global {
   interface Window {
@@ -21,23 +15,21 @@ declare global {
   }
 }
 
-export function getConsent(): TrackingConsent | null {
-  if (typeof window === "undefined") return null;
+export function isNoticeDismissed(): boolean {
+  if (typeof window === "undefined") return false;
   try {
-    const v = localStorage.getItem(CONSENT_STORAGE_KEY);
-    return v === "granted" || v === "denied" ? v : null;
+    return localStorage.getItem(NOTICE_STORAGE_KEY) === "dismissed";
   } catch {
-    return null; // storage blocked: treat as undecided, never track
+    return false; // storage blocked: the notice simply shows again next visit
   }
 }
 
-export function setConsent(value: TrackingConsent) {
+export function dismissNotice() {
   try {
-    localStorage.setItem(CONSENT_STORAGE_KEY, value);
+    localStorage.setItem(NOTICE_STORAGE_KEY, "dismissed");
   } catch {
-    // storage blocked: the choice just won't persist across visits
+    // storage blocked: the dismissal just won't persist across visits
   }
-  window.dispatchEvent(new CustomEvent(CONSENT_EVENT, { detail: value }));
 }
 
 /** Fire a standard Meta Pixel event. No-op until the pixel is loaded. */

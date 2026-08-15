@@ -2,29 +2,18 @@
 
 import Script from "next/script";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { CONSENT_EVENT, getConsent } from "@/lib/tracking";
+import { useEffect } from "react";
 
 // Loads the Meta Pixel and keeps PageView accurate across App Router
-// navigations. Rendered only when the admin has configured a pixel ID; loads
-// nothing until the visitor grants consent (see ConsentBanner).
+// navigations. Rendered only when the admin has configured a pixel ID, and
+// never on /admin so the operator's own editing doesn't pollute the data.
+// Loading is not gated on the visitor: TrackingNotice informs them and links
+// to the privacy policy, but the pixel runs regardless of whether it is
+// dismissed.
 
 export function MetaPixel({ pixelId }: { pixelId: string }) {
-  const [consented, setConsented] = useState(false);
   const pathname = usePathname();
-
-  // Read the stored choice after mount (localStorage doesn't exist on the
-  // server) and react to the banner's buttons without a reload.
-  /* eslint-disable react-hooks/set-state-in-effect */
-  useEffect(() => {
-    if (getConsent() === "granted") setConsented(true);
-    const onChange = (e: Event) => {
-      if ((e as CustomEvent).detail === "granted") setConsented(true);
-    };
-    window.addEventListener(CONSENT_EVENT, onChange);
-    return () => window.removeEventListener(CONSENT_EVENT, onChange);
-  }, []);
-  /* eslint-enable react-hooks/set-state-in-effect */
+  const active = !pathname.startsWith("/admin");
 
   // Client-side navigations don't reload the page, so the snippet's initial
   // PageView only covers the landing. Track the rest here. The base snippet
@@ -32,11 +21,11 @@ export function MetaPixel({ pixelId }: { pixelId: string }) {
   // against script load, so this fires once more on the landing page — Meta
   // dedupes same-URL PageViews itself.
   useEffect(() => {
-    if (!consented) return;
+    if (!active) return;
     window.fbq?.("track", "PageView");
-  }, [consented, pathname]);
+  }, [active, pathname]);
 
-  if (!consented || pathname.startsWith("/admin")) return null;
+  if (!active) return null;
 
   return (
     <Script id="meta-pixel" strategy="afterInteractive">
